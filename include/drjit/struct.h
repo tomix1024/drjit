@@ -23,9 +23,8 @@
 #define DRJIT_STRUCT_APPLY_3(x)       func(v1.x, v2.x, v3.x);
 #define DRJIT_STRUCT_APPLY_LABEL(x)   func(#x, v.x);
 
-#define DRJIT_STRUCT(Name, ...)                                                \
+#define DRJIT_STRUCT_NO_DEFAULT_CONSTRUCTOR(Name, ...)                         \
     static constexpr bool IsDrJitStruct = true;                                \
-    Name() = default;                                                          \
     Name(const Name &) = default;                                              \
     Name(Name &&) = default;                                                   \
     Name &operator=(const Name &) = default;                                   \
@@ -64,6 +63,10 @@
     auto operator[](const Array &array) {                                      \
         return drjit::masked(*this, array);                                    \
     }
+
+#define DRJIT_STRUCT(Name, ...)                                                \
+    Name() = default;                                                          \
+    DRJIT_STRUCT_NO_DEFAULT_CONSTRUCTOR(Name, __VA_ARGS__)
 
 
 NAMESPACE_BEGIN(drjit)

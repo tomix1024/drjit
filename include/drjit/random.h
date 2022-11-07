@@ -21,6 +21,7 @@
 
 #include <drjit/array.h>
 #include <drjit/idiv.h>
+#include <drjit/struct.h>
 
 #define PCG32_DEFAULT_STATE  0x853c49e6748fea9bULL
 #define PCG32_DEFAULT_STREAM 0xda3e39cb94b95bdbULL
@@ -372,6 +373,8 @@ template <typename T> struct PCG32 {
 
     UInt64 state;  // RNG state.  All values are possible.
     UInt64 inc;    // Controls which RNG sequence (stream) is selected. Must *always* be odd.
+
+    DRJIT_STRUCT_NO_DEFAULT_CONSTRUCTOR(PCG32, state, inc);
 
 private:
     struct initialize_state { };
