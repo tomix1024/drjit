@@ -405,6 +405,23 @@ public:
                 DR_TEX_ACCUM(idx[5], w1.x() * w0.y() * w1.z());
                 DR_TEX_ACCUM(idx[6], w0.x() * w1.y() * w1.z());
                 DR_TEX_ACCUM(idx[7], w1.x() * w1.y() * w1.z());
+            } else if constexpr (Dimension == 4) {
+                DR_TEX_ACCUM(idx[0], w0.x() * w0.y() * w0.z() * w0.w());
+                DR_TEX_ACCUM(idx[1], w1.x() * w0.y() * w0.z() * w0.w());
+                DR_TEX_ACCUM(idx[2], w0.x() * w1.y() * w0.z() * w0.w());
+                DR_TEX_ACCUM(idx[3], w1.x() * w1.y() * w0.z() * w0.w());
+                DR_TEX_ACCUM(idx[4], w0.x() * w0.y() * w1.z() * w0.w());
+                DR_TEX_ACCUM(idx[5], w1.x() * w0.y() * w1.z() * w0.w());
+                DR_TEX_ACCUM(idx[6], w0.x() * w1.y() * w1.z() * w0.w());
+                DR_TEX_ACCUM(idx[7], w1.x() * w1.y() * w1.z() * w0.w());
+                DR_TEX_ACCUM(idx[8+0], w0.x() * w0.y() * w0.z() * w1.w());
+                DR_TEX_ACCUM(idx[8+1], w1.x() * w0.y() * w0.z() * w1.w());
+                DR_TEX_ACCUM(idx[8+2], w0.x() * w1.y() * w0.z() * w1.w());
+                DR_TEX_ACCUM(idx[8+3], w1.x() * w1.y() * w0.z() * w1.w());
+                DR_TEX_ACCUM(idx[8+4], w0.x() * w0.y() * w1.z() * w1.w());
+                DR_TEX_ACCUM(idx[8+5], w1.x() * w0.y() * w1.z() * w1.w());
+                DR_TEX_ACCUM(idx[8+6], w0.x() * w1.y() * w1.z() * w1.w());
+                DR_TEX_ACCUM(idx[8+7], w1.x() * w1.y() * w1.z() * w1.w());
             }
 
             #undef DR_TEX_ACCUM
@@ -1260,6 +1277,19 @@ private:
                     }
                 }
             }
+        } else if constexpr (Dimension == 4) {
+            for (uint32_t iw = 0; iw < Length; iw++) {
+                for (uint32_t iz = 0; iz < Length; iz++) {
+                    for (uint32_t iy = 0; iy < Length; iy++) {
+                        for (uint32_t ix = 0; ix < Length; ix++) {
+                            pos_i[0][((iw * Length + iz) * Length + iy) * Length + ix] = offset[ix] + pos.x();
+                            pos_i[1][((iw * Length + iz) * Length + ix) * Length + iy] = offset[ix] + pos.y();
+                            pos_i[2][((iw * Length + ix) * Length + iz) * Length + iy] = offset[ix] + pos.z();
+                            pos_i[3][((ix * Length + iw) * Length + iz) * Length + iy] = offset[ix] + pos.w();
+                        }
+                    }
+                }
+            }
         }
 
         return pos_i;
@@ -1286,6 +1316,16 @@ private:
             index = Index(fmadd(
                 fmadd(Index(pos.z()), m_shape_opaque.y(), Index(pos.y())),
                 m_shape_opaque.x(), Index(pos.x())));
+        } else if constexpr (Dimension == 4) {
+            index = Index(
+                fmadd(
+                    fmadd(
+                        fmadd(
+                            Index(pos.w()), m_shape_opaque.z(), Index(pos.z())
+                        ), m_shape_opaque.y(), Index(pos.y())
+                    ), m_shape_opaque.x(),
+                    Index(pos.x())
+                ));
         }
 
         uint32_t channels = (uint32_t) m_value.shape(Dimension);
