@@ -157,7 +157,9 @@ void bind_texture_all(py::module &m) {
     bind_texture<Type, 1>(m, "Texture1f");
     bind_texture<Type, 2>(m, "Texture2f");
     bind_texture<Type, 3>(m, "Texture3f");
+    bind_texture<Type, 4>(m, "Texture4f");
     bind_texture<Type64, 1>(m, "Texture1f64");
     bind_texture<Type64, 2>(m, "Texture2f64");
     bind_texture<Type64, 3>(m, "Texture3f64");
+    bind_texture<Type64, 4>(m, "Texture4f64");
 }
